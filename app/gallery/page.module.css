@@ -1,0 +1,11 @@
+.photosContainer {
+  -ms-overflow-style: none;  /* Internet Explorer 10+ */
+  scrollbar-width: none;  /* Firefox */
+}
+.photosContainer::-webkit-scrollbar { 
+  display: none;  /* Safari and Chrome */
+}
+.category:hover {
+  border: 2px solid rgba(255, 255, 255, 0.34);
+  transition: all 0.2s;
+}

@@ -12,6 +12,7 @@ export function StoredBlobsList({ lastMutationTime }) {
     useEffect(() => {
         console.log('Fetching keys...');
         listShapesAction().then((response) => {
+            console.log({ response });
             setKeys(response);
         });
     }, [lastMutationTime]);
@@ -19,6 +20,7 @@ export function StoredBlobsList({ lastMutationTime }) {
     const onSelect = async (keyName) => {
         setSelectedKey(keyName);
         const data = await getShapeAction({ keyName });
+        console.log({ data });
         setPreviewData(data);
     };
 
