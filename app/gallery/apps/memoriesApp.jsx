@@ -80,7 +80,7 @@ export const UnsplashImage = ({ data }) => {
 
 export const GalleryAppContent = ({ selectedTab, setSelectedTab, setActiveApp }) => {
     const [selectedImage, setSelectedImage] = useState(false);
-    const localStorageID = localStorage.getItem(IDENTIFY_USER);
+    const localStorageID = typeof window !== 'undefined' ? window?.localStorage.getItem(IDENTIFY_USER) : false;
     const [userAlbums, setUserAlbums] = useState(undefined);
     const [openAlbums, setOpenAlbums] = useState(undefined);
     const [lastMutationTime, setLastMutationTime] = useState(0);

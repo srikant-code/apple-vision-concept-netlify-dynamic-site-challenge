@@ -1,3 +1,4 @@
+'use client';
 import moment from 'moment';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
@@ -78,7 +79,7 @@ export const updateAlbumBlob = async ({
         setWasUploaded: () => {},
         setUserAlbums: () => {},
         setBlobData: () => {},
-        localStorageID: localStorage.getItem(IDENTIFY_USER),
+        localStorageID: typeof window !== "undefined" ? window?.localStorage.getItem(IDENTIFY_USER) : false,
         postUploadScript: () => {}
     }
 }) => {
@@ -95,7 +96,7 @@ export const updateAlbumBlob = async ({
     // to identify a User Login created album and create a default
     if (!props.localStorageID) {
         const uniqueUserID = uniqueName();
-        localStorage.setItem(IDENTIFY_USER, uniqueUserID);
+        typeof window !== "undefined" ? window?.localStorage.setItem(IDENTIFY_USER, uniqueUserID): false;
         updateAlbums({ uniqueUserID, loginTime: GET_CURRENT_TIME(), existingBlobData });
     }
     if (props.localStorageID === 'delete-all-albums') await uploadAlbumAction({ parameters: { name: ALBUMS_BLOB } });
@@ -170,7 +171,7 @@ export const updateAlbumBlob = async ({
 
 export const AlbumsAppContent = ({ selectedTab, setActiveApp, activeApp }) => {
     const yourAlbumTab = selectedTab === 0;
-    const localStorageID = localStorage.getItem(IDENTIFY_USER);
+    const localStorageID = typeof window !== "undefined" ? window?.localStorage.getItem(IDENTIFY_USER): false;
     const [userAlbums, setUserAlbums] = useState(undefined);
     const [selectedAlbum, setSelectedAlbum] = useState(null);
     const [selectedBlobUser, setSelectedBlobUser] = useState(null);
