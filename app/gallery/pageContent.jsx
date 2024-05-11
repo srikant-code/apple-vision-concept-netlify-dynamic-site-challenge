@@ -14,7 +14,7 @@ export const APP = {
         icon: `/images/applephotos.png`,
         description: (
             <>
-                This app leverages Netlify&apos;s Image CDN capability. It allows you to filter images by date category.
+                This app leverages Netlify&apos;s <code>Image CDN capability</code> to display photos and <code>Netlify&apos;s blob storage</code> to Add photos to Albums. It allows you to filter images by date category.
                 The images are served from cache and optimized for quick loading, demonstrating the efficiency and speed
                 of Netlify&apos;s Image CDN.
             </>
@@ -173,25 +173,27 @@ const AppWrapper = ({ children, activeApp, curAppID, setActiveApp }) => {
     );
 };
 
+export const appContainerStyles = {
+    ...ReuseCSS.font,
+    margin: 20,
+    borderRadius: 40,
+    boxShadow: `0 4px 30px rgba(0, 0, 0, 0.28)`,
+    backdropFilter: `blur(15.1px)`,
+    border: `2px solid rgba(255, 255, 255, 0.34)`,
+    // borderImageSource: `linear-gradient(to left, #743ad5, #d53a9d)`,
+    padding: 20,
+    width: '60vw',
+    maxHeight: '60vh',
+    overflow: 'scroll',
+    resize: 'both',
+    ...ReuseCSS.transition
+};
+
 const AppTemplate = ({ activeApp, curAppID, setActiveApp, Component, componentProps = {} }) => {
     const [selectedTab, setSelectedTab] = useState(0);
     const internalStyles = {
         image: {},
-        appContainer: {
-            ...ReuseCSS.font,
-            margin: 20,
-            borderRadius: 40,
-            boxShadow: `0 4px 30px rgba(0, 0, 0, 0.28)`,
-            backdropFilter: `blur(15.1px)`,
-            border: `2px solid rgba(255, 255, 255, 0.34)`,
-            // borderImageSource: `linear-gradient(to left, #743ad5, #d53a9d)`,
-            padding: 20,
-            width: '60vw',
-            maxHeight: '60vh',
-            overflow: 'scroll',
-            resize: 'both',
-            ...ReuseCSS.transition
-        },
+        appContainer: appContainerStyles,
         categoriesContainer: {
             width: 'fit-content',
             borderRadius: 100,
@@ -328,6 +330,20 @@ export const Background = () => {
                     });
                 }}
             ></div>
+        </>
+    );
+};
+
+export const Modal = ({ children, style, open, onClose }) => {
+    return (
+        <>
+            {open ? (
+                <div className="appContainer" style={{ ...appContainerStyles, style }}>
+                    {children}
+                </div>
+            ) : (
+                <></>
+            )}
         </>
     );
 };

@@ -1,5 +1,5 @@
 import Image from 'next/image';
-import { Button } from '../common';
+import { Button, ExternalLink } from '../common';
 import { APP } from '../pageContent';
 
 export const SrikantAppContent = ({ selectedTab, setActiveApp }) => {
@@ -75,6 +75,11 @@ export const SrikantAppContent = ({ selectedTab, setActiveApp }) => {
                                     );
                                 })}
                             </ol>
+                            <Button>
+                                <ExternalLink href={'https://dev.to/srikant_code'}>
+                                    If you liked it, please do give it a vote here😄
+                                </ExternalLink>
+                            </Button>
                         </div>
                     </div>
                 </>
@@ -88,12 +93,31 @@ const References = () => {
     const references = [
         {
             id: 1,
-            text: 'All Gallery Images (unsplash.com)',
+            text: 'All Memories and Albums Images (unsplash.com)',
             url: 'http://unsplash.com/',
             description:
-                'All images in gallery as well as this app background image, are taken from unsplash.com. If you open a specific image from the Gallery app then you will find the Original author.'
+                'All images in Memories and the Albums as well as this app background image, are taken from unsplash.com. If you open a specific image from the Gallery app then you will find the Original author.'
         },
-        { id: 2, text: 'Apple App Icons', url: 'http://example.com/2', description: 'These are open source' }
+        {
+            id: 2,
+            text: 'Apple App Icons',
+            url: 'https://google.com',
+            description: 'These are open source, and taken from basic google search results'
+        },
+        {
+            id: 3,
+            text: 'Images in Discover App',
+            url: 'https://en.wikipedia.org/api/rest_v1/page/random/summary',
+            description:
+                'These are directly served from wikipedia random article API https://en.wikipedia.org/api/rest_v1/page/random/summary using SSR, and the cache is revalidated by clicking the `next article` button.'
+        },
+        {
+            id: 4,
+            text: 'Please vote my submission of Netlify dynamic site challenge in Dev.to. I will open source the code if it gets selected.',
+            url: 'https://dev.to/srikant_code',
+            description: 'It would also motivate me to continue doing further such work'
+        }
+
         // Add more references as needed
     ];
 

@@ -3,6 +3,8 @@ import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { UnsplashPhotos } from '../unsplashimages';
 import moment from 'moment';
+import { Albums, IDENTIFY_USER, MUTATIONS, updateAlbumBlob } from './albumsApp';
+import { APP, Modal, appContainerStyles } from '../pageContent';
 
 const { ExternalLink, Button, ReuseCSS, MONTH, DAY, CONSTANTS } = require('../common');
 
@@ -76,8 +78,33 @@ export const UnsplashImage = ({ data }) => {
     );
 };
 
-export const GalleryAppContent = ({ selectedTab, setSelectedTab }) => {
+export const GalleryAppContent = ({ selectedTab, setSelectedTab, setActiveApp }) => {
     const [selectedImage, setSelectedImage] = useState(false);
+    const localStorageID = localStorage.getItem(IDENTIFY_USER);
+    const [userAlbums, setUserAlbums] = useState(undefined);
+    const [openAlbums, setOpenAlbums] = useState(undefined);
+    const [lastMutationTime, setLastMutationTime] = useState(0);
+    const [wasUploaded, setWasUploaded] = useState(false);
+    const [blobData, setBlobData] = useState();
+
+    const defaultPropsFromMutation = {
+        setUserAlbums,
+        setWasUploaded,
+        localStorageID,
+        setBlobData
+    };
+
+    console.log({ userAlbums });
+    useEffect(() => {
+        updateAlbumBlob({
+            props: {
+                ...defaultPropsFromMutation,
+                postUploadScript: () => {
+                    // do something
+                }
+            }
+        });
+    }, []);
 
     const internalStyles = {
         image: {},
@@ -95,8 +122,8 @@ export const GalleryAppContent = ({ selectedTab, setSelectedTab }) => {
                 // ...ReuseCSS.transition,
                 border: photo?.border === null ? undefined : `2px solid #ffffff57`,
                 borderRadius: 20,
-                height: photo.height ?? '55vh',
-                width: photo.width === null ? '65vw' : null,
+                height: photo.heightImg ?? '55vh',
+                width: photo.widthImg === null ? '65vw' : null,
                 color: photo?.color,
                 objectFit: 'cover',
                 cursor: 'pointer'
@@ -142,7 +169,7 @@ export const GalleryAppContent = ({ selectedTab, setSelectedTab }) => {
                         : '/images/corgi.jpg'
             },
             ...photo,
-            height: selectedImage
+            heightImg: selectedImage
                 ? 0
                 : selectedTab === 0
                 ? 200
@@ -151,7 +178,15 @@ export const GalleryAppContent = ({ selectedTab, setSelectedTab }) => {
                 : selectedTab === 2
                 ? 180
                 : 170,
-            width: selectedImage ? 0 : selectedTab === 0 ? 10 : selectedTab === 1 ? 250 : selectedTab === 2 ? 195 : 150,
+            widthImg: selectedImage
+                ? 0
+                : selectedTab === 0
+                ? 300
+                : selectedTab === 1
+                ? 250
+                : selectedTab === 2
+                ? 195
+                : 150,
             year: moment(photo.created_at).year(),
             month: MONTH[moment(photo.created_at).month()],
             day: DAY[moment(photo.created_at).day()]
@@ -177,11 +212,16 @@ export const GalleryAppContent = ({ selectedTab, setSelectedTab }) => {
         return mapper;
     };
     const imagesWithCategory = getImages();
-    console.log({imagesWithCategory})
+    console.log({ imagesWithCategory });
 
     useEffect(() => {
         setSelectedImage(false);
     }, [selectedTab]);
+
+    useEffect(() => {
+        console.log('Fetching blobs...');
+        updateAlbumBlob({ props: { ...defaultPropsFromMutation } });
+    }, [lastMutationTime]);
 
     return (
         <>
@@ -217,16 +257,17 @@ export const GalleryAppContent = ({ selectedTab, setSelectedTab }) => {
             </style>
             <div style={internalStyles.fullImage}>
                 <div style={{ position: 'absolute', top: 30, left: 30, display: 'flex', gap: 10 }}>
-                    <Button
-                        onClick={(e) =>
-                            setSelectedImage(selectedImage ? false : { ...selectedImage, height: 600, width: 800 })
-                        }
-                        circular
-                    >
+                    <Button onClick={(e) => setSelectedImage(false)} circular>
                         &lt;-
                     </Button>
-                    <Button onClick={(e) => console.log('Clicked')} style={{}}>
-                        Add to Blob List
+                    <Button
+                        onClick={(e) => {
+                            console.log('Clicked');
+                            setOpenAlbums(!openAlbums);
+                        }}
+                        style={{}}
+                    >
+                        Add to Albums (Blobs)
                     </Button>
                 </div>
                 <Image
@@ -241,12 +282,91 @@ export const GalleryAppContent = ({ selectedTab, setSelectedTab }) => {
                             : selectedImage?.urls?.raw
                     }
                     alt={selectedImage?.alt_description ? selectedImage?.alt_description : 'alt text is not available'}
-                    width={selectedImage?.width ?? 180}
-                    height={selectedImage?.height ?? 37}
+                    width={selectedImage?.widthImg ?? 180}
+                    height={selectedImage?.heightImg ?? 37}
                     quality={100}
                     priority
                 />
                 <UnsplashImage data={selectedImage} />
+                {openAlbums && (
+                    <div
+                        className="appContainer"
+                        style={{
+                            ...appContainerStyles,
+                            position: 'absolute',
+                            top: 0,
+                            right: 0,
+                            width: '50%',
+                            height: '80%',
+                            padding: 30
+                        }}
+                    >
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                            <Button circular onClick={() => setOpenAlbums(false)} selected={false}>
+                                &lt;-
+                            </Button>
+                            <h4 style={{ margin: 0 }}>Your Albums</h4>
+                        </div>
+                        <Albums
+                            onClick={(album, isAdded) => {
+                                if (album?.toLowerCase() !== 'all photos' && album?.toLowerCase() !== 'allphotos') {
+                                    if (isAdded)
+                                        updateAlbumBlob({
+                                            mutation: MUTATIONS.DELETE_FILE_FROM_ALBUM,
+                                            payload: {
+                                                albumNameID: album,
+                                                imageDetails: { ...selectedImage, lastUpdatedOn: new Date() }
+                                            },
+                                            props: {
+                                                ...defaultPropsFromMutation,
+                                                postUploadScript: () => {
+                                                    setLastMutationTime(Date.now());
+                                                }
+                                            }
+                                        });
+                                    else
+                                        updateAlbumBlob({
+                                            mutation: MUTATIONS.ADD_FILE_TO_ALBUM,
+                                            payload: {
+                                                albumNameID: album,
+                                                imageDetails: { ...selectedImage, lastUpdatedOn: new Date() }
+                                            },
+                                            props: {
+                                                ...defaultPropsFromMutation,
+                                                postUploadScript: () => {
+                                                    setLastMutationTime(Date.now());
+                                                }
+                                            }
+                                        });
+                                }
+                            }}
+                            hideAllPhotos
+                            userAlbums={userAlbums}
+                            selectedAlbumHandler={(album) => {
+                                return userAlbums[album]?.files?.find((file) => {
+                                    return file?.id === selectedImage?.id;
+                                })
+                                    ? album
+                                    : undefined;
+                            }}
+                        />
+                        <br />
+                        <Button
+                            onClick={() => {
+                                setActiveApp(1);
+                            }}
+                            style={{
+                                display: 'flex',
+                                justifyContent: 'center',
+                                gap: 10
+                            }}
+                            selected
+                        >
+                            <Image style={{}} src={APP[0]?.icon} alt={APP[1]?.name} width={28} height={28} priority />
+                            Create more {APP[1]?.name}
+                        </Button>
+                    </div>
+                )}
             </div>
             <div>
                 {Object.keys(imagesWithCategory)?.map((category, key) => {
@@ -289,7 +409,13 @@ export const GalleryAppContent = ({ selectedTab, setSelectedTab }) => {
                                                 style={internalStyles.image}
                                                 onClick={(e) =>
                                                     setSelectedImage(
-                                                        selectedImage ? false : { ...photo, height: 600, width: 800 }
+                                                        selectedImage
+                                                            ? false
+                                                            : {
+                                                                  ...photo,
+                                                                  heightImg: 530,
+                                                                  widthImg: photo?.width
+                                                              }
                                                     )
                                                 }
                                             >
@@ -310,8 +436,8 @@ export const GalleryAppContent = ({ selectedTab, setSelectedTab }) => {
                                                             ? photo?.alt_description
                                                             : 'alt text is not available'
                                                     }
-                                                    width={photo.width ?? 180}
-                                                    height={photo.height ?? 37}
+                                                    width={photo.widthImg ?? 180}
+                                                    height={photo.heightImg ?? 37}
                                                     priority
                                                 />
                                             </div>
