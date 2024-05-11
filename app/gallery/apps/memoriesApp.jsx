@@ -78,7 +78,7 @@ export const UnsplashImage = ({ data }) => {
     );
 };
 
-export const GalleryAppContent = ({ selectedTab, setSelectedTab, setActiveApp }) => {
+export const GalleryAppContent = ({ selectedTab, setSelectedTab, activeApp, setActiveApp }) => {
     const [selectedImage, setSelectedImage] = useState(false);
     const localStorageID = typeof window !== 'undefined' ? window?.localStorage.getItem(IDENTIFY_USER) : false;
     const [userAlbums, setUserAlbums] = useState(undefined);
@@ -95,16 +95,6 @@ export const GalleryAppContent = ({ selectedTab, setSelectedTab, setActiveApp })
     };
 
     console.log({ userAlbums });
-    useEffect(() => {
-        updateAlbumBlob({
-            props: {
-                ...defaultPropsFromMutation,
-                postUploadScript: () => {
-                    // do something
-                }
-            }
-        });
-    }, []);
 
     const internalStyles = {
         image: {},
@@ -221,7 +211,7 @@ export const GalleryAppContent = ({ selectedTab, setSelectedTab, setActiveApp })
     useEffect(() => {
         console.log('Fetching blobs...');
         updateAlbumBlob({ props: { ...defaultPropsFromMutation } });
-    }, [lastMutationTime]);
+    }, [lastMutationTime, activeApp]);
 
     return (
         <>

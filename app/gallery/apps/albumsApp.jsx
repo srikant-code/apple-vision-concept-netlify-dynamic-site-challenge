@@ -6,7 +6,7 @@ import { uniqueName } from 'utils';
 import { Button, CONSTANTS } from '../common';
 import { APP } from '../pageContent';
 import { UnsplashPhotos } from '../unsplashimages';
-import { getAlbumAction, uploadAlbumAction } from './blobs/actions';
+import { getAlbumAction, listAlbumsAction, uploadAlbumAction } from './blobs/actions';
 
 export const metadata = {
     title: `Netlify's Blob Storage`
@@ -24,7 +24,7 @@ export const MUTATIONS = {
     MOVE_FILE_TO_ANOTHER_ALBUM: 'MOVE_FILE_TO_ANOTHER_ALBUM'
 };
 
-const updateAlbums = async ({ uniqueUserID, loginTime, existingBlobData, postUploadScript = () => {} }) => {
+const updateAlbums = async ({ uniqueUserID, loginTime, existingBlobData = {}, postUploadScript = () => {} }) => {
     await uploadAlbumAction({
         parameters: {
             name: ALBUMS_BLOB,
@@ -70,6 +70,7 @@ const updateAlbums = async ({ uniqueUserID, loginTime, existingBlobData, postUpl
         }
     });
     postUploadScript();
+    console.log('Uploaded to blob storage');
 };
 
 export const updateAlbumBlob = async ({
@@ -87,8 +88,8 @@ export const updateAlbumBlob = async ({
     props.setWasUploaded(false);
 
     const data = await getAlbumAction({ albumName: ALBUMS_BLOB });
-    console.log({ data });
-    const existingBlobData = data ? (data?.data ? data?.data : { name: 'abc' }) : { name: 'abc' };
+    console.log({ data, s: props.localStorageID });
+    const existingBlobData = data ? (data?.data ? data?.data : { name: ALBUMS_BLOB }) : { name: ALBUMS_BLOB };
     const { name, ...otherBlobUsers } = existingBlobData;
     props.setBlobData(otherBlobUsers);
     props.setUserAlbums(existingBlobData[props.localStorageID] ? existingBlobData[props.localStorageID]?.albums : {});
@@ -97,7 +98,12 @@ export const updateAlbumBlob = async ({
     if (!props.localStorageID) {
         const uniqueUserID = uniqueName();
         typeof window !== 'undefined' ? window?.localStorage.setItem(IDENTIFY_USER, uniqueUserID) : false;
-        updateAlbums({ uniqueUserID, loginTime: GET_CURRENT_TIME(), existingBlobData });
+        updateAlbums({
+            uniqueUserID,
+            loginTime: GET_CURRENT_TIME(),
+            existingBlobData,
+            postUploadScript: props?.postUploadScript
+        });
     }
     if (props.localStorageID === 'delete-all-albums') await uploadAlbumAction({ parameters: { name: ALBUMS_BLOB } });
 
@@ -165,6 +171,8 @@ export const updateAlbumBlob = async ({
         } else if (mutation === MUTATIONS.MOVE_FILE_TO_ANOTHER_ALBUM) {
             // Implement it
             props.postUploadScript();
+        } else {
+            // props.postUploadScript();
         }
     }
 };
@@ -194,18 +202,29 @@ export const AlbumsAppContent = ({ selectedTab, setActiveApp, activeApp }) => {
 
     useEffect(() => {
         console.log('Fetching blobs...');
+        console.log(typeof window !== 'undefined' ? window : 'no window object found');
+        console.log({ process });
         updateAlbumBlob({ props: { ...defaultPropsFromMutation } });
-        // listAlbumsAction().then((response) => {
-        //     console.log({ response });
-        //     // setAlbums(response);
+        // getAlbumAction({ albumName: ALBUMS_BLOB })?.then((res) => {
+        //     console.log({ res });
+        //     setUserAlbums(res?.data[localStorageID]?.albums ?? {});
+        //     setBlobData(res?.data ?? {});
         // });
+        listAlbumsAction().then((response) => {
+            console.log({ listResponse: response });
+            (response ?? []).map((r) => {
+                getAlbumAction({ albumName: r })?.then((res) => console.log({ res, r }));
+            });
+            // setAlbums(response);
+        });
     }, [lastMutationTime, activeApp]);
 
     const defaultPropsFromMutation = {
         setUserAlbums,
         setWasUploaded,
         localStorageID,
-        setBlobData
+        setBlobData,
+        postUploadScript
     };
 
     const reuse = {
@@ -270,12 +289,6 @@ export const AlbumsAppContent = ({ selectedTab, setActiveApp, activeApp }) => {
     const otherUsersAlbumTab = !yourAlbumTab;
     const otherUserOpenedAlbum = selectedBlobUser && selectedAlbum;
     const otherUserAlbumTabHomePage = otherUsersAlbumTab && !selectedAlbum;
-
-    useEffect(() => {
-        if (selectedAlbum) {
-            setSelectedAlbum(userAlbums[(selectedAlbum?.albumID, selectedAlbum?.name)]);
-        }
-    }, [userAlbums]);
 
     return (
         <div style={{ padding: 20 }}>
@@ -399,7 +412,7 @@ export const AlbumsAppContent = ({ selectedTab, setActiveApp, activeApp }) => {
                                             overflow: 'auto'
                                         }}
                                     >
-                                        {selectedAlbum?.files?.length &&
+                                        {selectedAlbum?.files?.length ? (
                                             (selectedAlbum?.files ?? [])?.map((file) => {
                                                 return (
                                                     <div key={file?.id ?? file?.url}>
@@ -443,35 +456,40 @@ export const AlbumsAppContent = ({ selectedTab, setActiveApp, activeApp }) => {
                                                                     </p>
                                                                 </div>
                                                             </div>
-                                                            <Button
-                                                                onClick={(e) =>
-                                                                    updateAlbumBlob({
-                                                                        mutation: MUTATIONS.DELETE_FILE_FROM_ALBUM,
-                                                                        payload: {
-                                                                            albumNameID: selectedAlbum?.albumID,
-                                                                            imageDetails: {
-                                                                                ...file,
-                                                                                lastUpdatedOn: new Date()
+                                                            {selectedAlbum?.albumID !== 'All Photos' && (
+                                                                <Button
+                                                                    onClick={(e) =>
+                                                                        updateAlbumBlob({
+                                                                            mutation: MUTATIONS.DELETE_FILE_FROM_ALBUM,
+                                                                            payload: {
+                                                                                albumNameID: selectedAlbum?.albumID,
+                                                                                imageDetails: {
+                                                                                    ...file,
+                                                                                    lastUpdatedOn: new Date()
+                                                                                }
+                                                                            },
+                                                                            props: {
+                                                                                ...defaultPropsFromMutation,
+                                                                                postUploadScript: (obj) => {
+                                                                                    setLastMutationTime(Date.now());
+                                                                                    setSelectedAlbum(obj);
+                                                                                }
                                                                             }
-                                                                        },
-                                                                        props: {
-                                                                            ...defaultPropsFromMutation,
-                                                                            postUploadScript: (obj) => {
-                                                                                setLastMutationTime(Date.now());
-                                                                                setSelectedAlbum(obj);
-                                                                            }
-                                                                        }
-                                                                    })
-                                                                }
-                                                                circular
-                                                                selected={false}
-                                                            >
-                                                                ✖
-                                                            </Button>
+                                                                        })
+                                                                    }
+                                                                    circular
+                                                                    selected={false}
+                                                                >
+                                                                    ✖
+                                                                </Button>
+                                                            )}
                                                         </div>
                                                     </div>
                                                 );
-                                            })}
+                                            })
+                                        ) : (
+                                            <></>
+                                        )}
                                         {!selectedAlbum?.files?.length && (
                                             <div style={styles.noPhotos}>
                                                 {(selectedAlbum?.id
