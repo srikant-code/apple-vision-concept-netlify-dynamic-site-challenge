@@ -6,7 +6,7 @@ import moment from 'moment';
 import { Albums, IDENTIFY_USER, MUTATIONS, updateAlbumBlob } from './albumsApp';
 import { APP, Modal, appContainerStyles } from '../pageContent';
 
-const { ExternalLink, Button, ReuseCSS, MONTH, DAY, CONSTANTS } = require('../common');
+const { ExternalLink, Button, ReuseCSS, MONTH, DAY, CONSTANTS, Spinner } = require('../common');
 
 export const UnsplashImage = ({ data }) => {
     const reuse = {
@@ -85,6 +85,7 @@ export const GalleryAppContent = ({ selectedTab, setSelectedTab, activeApp, setA
     const [openAlbums, setOpenAlbums] = useState(undefined);
     const [lastMutationTime, setLastMutationTime] = useState(0);
     const [wasUploaded, setWasUploaded] = useState(false);
+    const [loader, setLoader] = useState(false);
     const [blobData, setBlobData] = useState();
 
     const defaultPropsFromMutation = {
@@ -202,15 +203,19 @@ export const GalleryAppContent = ({ selectedTab, setSelectedTab, activeApp, setA
         return mapper;
     };
     const imagesWithCategory = getImages();
-    console.log({ imagesWithCategory });
+    // console.log({ imagesWithCategory });
 
     useEffect(() => {
         setSelectedImage(false);
     }, [selectedTab]);
 
     useEffect(() => {
-        console.log('Fetching blobs...');
-        updateAlbumBlob({ props: { ...defaultPropsFromMutation } });
+        if (activeApp < 2) {
+            console.log('Fetching blobs...');
+            setLoader(true);
+            updateAlbumBlob({ props: { ...defaultPropsFromMutation } });
+            setLoader(false);
+        }
     }, [lastMutationTime, activeApp]);
 
     return (
@@ -291,15 +296,17 @@ export const GalleryAppContent = ({ selectedTab, setSelectedTab, activeApp, setA
                             padding: 30
                         }}
                     >
-                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                        <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16, height: 50 }}>
                             <Button circular onClick={() => setOpenAlbums(false)} selected={false}>
                                 &lt;-
                             </Button>
                             <h4 style={{ margin: 0 }}>Your Albums</h4>
+                            {loader && <Spinner size={30} />}
                         </div>
                         <Albums
                             onClick={(album, isAdded) => {
                                 if (album?.toLowerCase() !== 'all photos' && album?.toLowerCase() !== 'allphotos') {
+                                    setLoader(true);
                                     if (isAdded)
                                         updateAlbumBlob({
                                             mutation: MUTATIONS.DELETE_FILE_FROM_ALBUM,
@@ -311,6 +318,7 @@ export const GalleryAppContent = ({ selectedTab, setSelectedTab, activeApp, setA
                                                 ...defaultPropsFromMutation,
                                                 postUploadScript: () => {
                                                     setLastMutationTime(Date.now());
+                                                    setLoader(false);
                                                 }
                                             }
                                         });
@@ -325,6 +333,7 @@ export const GalleryAppContent = ({ selectedTab, setSelectedTab, activeApp, setA
                                                 ...defaultPropsFromMutation,
                                                 postUploadScript: () => {
                                                     setLastMutationTime(Date.now());
+                                                    setLoader(false);
                                                 }
                                             }
                                         });

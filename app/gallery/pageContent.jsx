@@ -1,7 +1,7 @@
 'use client';
 
 import Image from 'next/image';
-import { Button, ReuseCSS } from './common';
+import { Button, ExternalLink, ReuseCSS } from './common';
 import { useState } from 'react';
 import { GalleryAppContent as MemoriesAppContent } from './apps/memoriesApp';
 import { NewsAppContent } from './apps/discoverApp';
@@ -14,9 +14,10 @@ export const APP = {
         icon: `/images/applephotos.png`,
         description: (
             <>
-                This app leverages Netlify&apos;s <code>Image CDN capability</code> to display photos and <code>Netlify&apos;s blob storage</code> to Add photos to Albums. It allows you to filter images by date category.
-                The images are served from cache and optimized for quick loading, demonstrating the efficiency and speed
-                of Netlify&apos;s Image CDN.
+                This app leverages Netlify&apos;s <code>Image CDN capability</code> to display photos and{' '}
+                <code>Netlify&apos;s blob storage</code> to Add photos to Albums. It allows you to filter images by date
+                category. The images are served from cache and optimized for quick loading, demonstrating the efficiency
+                and speed of Netlify&apos;s Image CDN.
             </>
         ),
         component: MemoriesAppContent,
@@ -32,9 +33,11 @@ export const APP = {
         icon: `/images/applefiles.png`,
         description: (
             <>
-                This app utilizes Netlify&apos;s Blobs storage to store user album metadata and contents. In this
-                prototype project, there&apos;s no authentication implemented, meaning anyone can update the albums.
-                This feature showcases the flexibility and user-friendly nature of Netlify&apos;s Blobs storage.
+                This app utilizes <code>Netlify&apos;s Blobs</code> storage to store user albums and its contents. In
+                this prototype project, there&apos;s no authentication implemented, but I have written a clever and
+                complex logic to create anonymous users and handle their albums data in blobs. You can see other users
+                albums from the <code>Other&apos;s Albums</code> tab. This feature showcases the flexibility and
+                user-friendly nature of Netlify&apos;s Blobs storage.
             </>
         ),
         component: AlbumsAppContent,
@@ -48,9 +51,9 @@ export const APP = {
         icon: `/images/applenews.png`,
         description: (
             <>
-                This app uses Netlify&apos;s Cache Revalidation technique to fetch the latest articles from the web. It
-                highlights how Netlify&apos;s Cache Revalidation can ensure users always have access to the most recent
-                information.
+                This app uses Netlify&apos;s Cache Revalidation technique to fetch the latest articles from the web
+                (Wikipedia) using SSR(Server Side Rendering technique of Next JS). It highlights how Netlify&apos;s
+                Cache Revalidation can ensure users always have access to the most recent information.
             </>
         ),
         component: NewsAppContent,
@@ -62,7 +65,9 @@ export const APP = {
         description: (
             <>
                 This project is a hobby endeavor that I&apos;m proud of, and I hope it helps you understand the
-                potential of Netlify&apos;s capabilities. Enjoy exploring!
+                potential of Netlify&apos;s capabilities. Enjoy exploring! You can connect with me here{' '}
+                <ExternalLink href="https://www.linkedin.com/in/srikant-design/">LinkedIn</ExternalLink> |{' '}
+                <ExternalLink href="https://twitter.com/srikant_design">Twitter</ExternalLink>
             </>
         ),
         component: SrikantAppContent,
@@ -75,7 +80,7 @@ export const APP = {
 
 export const PageContent = (props) => {
     const [activeApp, setActiveApp] = useState(1);
-    console.log({ props });
+    // console.log({ props });
 
     const internalStyles = {
         main: {
@@ -293,7 +298,7 @@ export const Background = () => {
             ...ReuseCSS.font,
             ...ReuseCSS.center,
             height: '100vh',
-            backgroundImage: `url("/_next/image?url=%2Fimages%2Fspacejoy-9M66C_w_ToM-unsplash.jpg&w=${1920}&q=75")`,
+            backgroundImage: `url("/_next/image?url=%2Fimages%2Fspacejoy-9M66C_w_ToM-unsplash.jpg&w=${1920}&q=50")`,
             backgroundColor: `linear-gradient(153deg, rgba(0,0,0,1) 0%, rgba(0,0,94,1) 48%, rgba(0,84,102,1) 100%)`,
             backgroundPosition: `${50 + 10 * (mousePos.clientX / mousePos.innerWidth)}% ${
                 50 + 5 * (mousePos.clientY / mousePos.innerHeight)

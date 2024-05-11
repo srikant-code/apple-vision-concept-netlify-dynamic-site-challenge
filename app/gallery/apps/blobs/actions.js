@@ -3,7 +3,7 @@ import { getDeployStore, getStore } from '@netlify/blobs';
 import { uploadDisabled } from 'utils';
 
 function store() {
-    console.log({ process });
+    // console.log({ process });
     return getStore({ name: 'albums', consistency: 'strong' });
 }
 
@@ -13,13 +13,13 @@ export async function uploadAlbumAction({ parameters }) {
 
     const key = parameters.name;
     await store().setJSON(key ?? 'albums', parameters, { metadata: { createdOn: new Date() } });
-    console.log('Stored album with parameters:', parameters, 'to key:', key);
+    // console.log('Stored album with parameters:', parameters, 'to key:', key);
 }
 
 export async function listAlbumsAction() {
     const data = await store().list();
     const keys = data.blobs.map(({ key }) => key);
-    console.log({ data, keys });
+    // console.log({ data, keys });
     return keys;
 }
 

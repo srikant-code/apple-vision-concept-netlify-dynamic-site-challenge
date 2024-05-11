@@ -3,7 +3,7 @@ import moment from 'moment';
 import Image from 'next/image';
 import { useEffect, useState } from 'react';
 import { uniqueName } from 'utils';
-import { Button, CONSTANTS } from '../common';
+import { Button, CONSTANTS, Spinner } from '../common';
 import { APP } from '../pageContent';
 import { UnsplashPhotos } from '../unsplashimages';
 import { getAlbumAction, listAlbumsAction, uploadAlbumAction } from './blobs/actions';
@@ -32,24 +32,6 @@ const updateAlbums = async ({ uniqueUserID, loginTime, existingBlobData = {}, po
                 ...existingBlobData,
                 [uniqueUserID]: {
                     albums: {
-                        ['All Photos']: {
-                            name: 'All photos',
-                            // id: 'AllPhotos',
-                            lastUpdatedOn: new Date(),
-                            createdOn: loginTime,
-                            files: UnsplashPhotos()?.map((img) => {
-                                return {
-                                    name: `${img.slug.substr(0, 25)}.png`,
-                                    url: img?.urls?.small
-                                        ? img?.urls?.small
-                                        : img?.urls?.regular
-                                        ? img?.urls?.regular
-                                        : img?.urls?.full,
-                                    lastUpdatedOn: img.updated_at,
-                                    ...img
-                                };
-                            })
-                        },
                         Trip: {
                             name: 'Trip',
                             // id: 'Trip',
@@ -73,6 +55,30 @@ const updateAlbums = async ({ uniqueUserID, loginTime, existingBlobData = {}, po
     console.log('Uploaded to blob storage');
 };
 
+const ClientSideBuildAllPhotosAlbum = (otherAlbums = {}) => {
+    return {
+        ['All Photos']: {
+            name: 'All photos',
+            // id: 'AllPhotos',
+            lastUpdatedOn: new Date(),
+            createdOn: GET_CURRENT_TIME(),
+            files: UnsplashPhotos()?.map((img) => {
+                return {
+                    name: `${img.slug.substr(0, 25)}.png`,
+                    url: img?.urls?.small
+                        ? img?.urls?.small
+                        : img?.urls?.regular
+                        ? img?.urls?.regular
+                        : img?.urls?.full,
+                    lastUpdatedOn: img.updated_at,
+                    ...img
+                };
+            })
+        },
+        ...otherAlbums
+    };
+};
+
 export const updateAlbumBlob = async ({
     mutation,
     payload,
@@ -90,6 +96,15 @@ export const updateAlbumBlob = async ({
     const data = await getAlbumAction({ albumName: ALBUMS_BLOB });
     console.log({ data, s: props.localStorageID });
     const existingBlobData = data ? (data?.data ? data?.data : { name: ALBUMS_BLOB }) : { name: ALBUMS_BLOB };
+
+    Object.keys(existingBlobData).forEach((key) => {
+        if (key !== 'name' && existingBlobData[key]?.albums) {
+            existingBlobData[key].albums = ClientSideBuildAllPhotosAlbum(existingBlobData[key]?.albums);
+        }
+    });
+
+    console.log('prepared', { existingBlobData });
+
     const { name, ...otherBlobUsers } = existingBlobData;
     props.setBlobData(otherBlobUsers);
     props.setUserAlbums(existingBlobData[props.localStorageID] ? existingBlobData[props.localStorageID]?.albums : {});
@@ -108,6 +123,9 @@ export const updateAlbumBlob = async ({
     if (props.localStorageID === 'delete-all-albums') await uploadAlbumAction({ parameters: { name: ALBUMS_BLOB } });
 
     const prepareObj = (obj) => {
+        if (obj['All Photos']) delete obj['All Photos']; // to decrease the payload size
+
+        console.log('uploading ', { obj });
         return {
             parameters: {
                 name: ALBUMS_BLOB,
@@ -188,9 +206,10 @@ export const AlbumsAppContent = ({ selectedTab, setActiveApp, activeApp }) => {
     const [blobData, setBlobData] = useState();
     const [lastMutationTime, setLastMutationTime] = useState(0);
 
-    const postUploadScript = () => {
+    const postUploadScript = (obj) => {
         setWasUploaded(true);
         setLastMutationTime(Date.now());
+        if (obj) setSelectedAlbum(obj);
     };
 
     const [wasUploaded, setWasUploaded] = useState(false);
@@ -201,22 +220,19 @@ export const AlbumsAppContent = ({ selectedTab, setActiveApp, activeApp }) => {
     }, [selectedTab]);
 
     useEffect(() => {
-        console.log('Fetching blobs...');
-        console.log(typeof window !== 'undefined' ? window : 'no window object found');
-        console.log({ process });
-        updateAlbumBlob({ props: { ...defaultPropsFromMutation } });
-        // getAlbumAction({ albumName: ALBUMS_BLOB })?.then((res) => {
-        //     console.log({ res });
-        //     setUserAlbums(res?.data[localStorageID]?.albums ?? {});
-        //     setBlobData(res?.data ?? {});
-        // });
-        listAlbumsAction().then((response) => {
-            console.log({ listResponse: response });
-            (response ?? []).map((r) => {
-                getAlbumAction({ albumName: r })?.then((res) => console.log({ res, r }));
+        if (activeApp < 2) {
+            console.log('Fetching blobs...');
+            console.log(typeof window !== 'undefined' ? window : 'no window object found');
+            console.log({ process });
+            updateAlbumBlob({ props: { ...defaultPropsFromMutation } });
+            listAlbumsAction().then((response) => {
+                console.log({ listResponse: response });
+                (response ?? []).map((r) => {
+                    getAlbumAction({ albumName: r })?.then((res) => console.log({ res, r }));
+                });
+                // setAlbums(response);
             });
-            // setAlbums(response);
-        });
+        }
     }, [lastMutationTime, activeApp]);
 
     const defaultPropsFromMutation = {
@@ -601,9 +617,7 @@ export const AlbumsAppContent = ({ selectedTab, setActiveApp, activeApp }) => {
                             )}
                         </div>
                     ) : (
-                        <div style={{ display: 'flex', placeContent: 'center', height: 380 }}>
-                            Loading all albums ...
-                        </div>
+                        <Spinner text="Loading all albums" />
                     )}
                 </>
             }

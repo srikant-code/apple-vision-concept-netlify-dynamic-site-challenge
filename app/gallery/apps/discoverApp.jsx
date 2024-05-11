@@ -1,13 +1,13 @@
 import moment from 'moment';
 import { CONSTANTS, SubmitButton } from '../common';
-import { revalidateRandomWiki } from '../page';
 import Image from 'next/image';
+import { revalidateRandomWiki } from 'app/page';
 export const metadata = {
     title: 'On-Demand Revalidation'
 };
 
 export const NewsAppContent = ({ selectedTab, setActiveApp, content, extract }) => {
-    console.log({ content, extract });
+    // console.log({ content, extract });
     return (
         <div style={{ padding: 20 }}>
             <style>{`
@@ -50,7 +50,7 @@ export const NewsAppContent = ({ selectedTab, setActiveApp, content, extract }) 
 };
 
 export function RandomWikiArticle({ data, extract }) {
-    console.log({ data });
+    // console.log({ data });
     return (
         <div>
             <div style={{ marginTop: 10 }}>

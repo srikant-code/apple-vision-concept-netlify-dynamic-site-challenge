@@ -89,3 +89,37 @@ export function SubmitButton({ text = 'Submit' }) {
         </Button>
     );
 }
+
+export const Spinner = ({ text, size = 50 }) => (
+    <div
+        style={{
+            display: 'flex',
+            placeContent: 'center',
+            flexFlow: 'column',
+            height: 380,
+            alignItems: 'center',
+            gap: 16
+        }}
+    >
+        <div className="loader" style={{ height: size, width: size }}>
+            <style>{`
+.loader {
+    border: 5px solid #f3f3f361;
+    border-top: 5px solid #00b3f059;
+    border-radius: 90%;
+    animation: spin 1s linear infinite;
+}
+
+@keyframes spin {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+`}</style>
+        </div>
+        {text && <p>{text}</p>}
+    </div>
+);

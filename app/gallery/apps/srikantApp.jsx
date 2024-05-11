@@ -22,26 +22,31 @@ export const SrikantAppContent = ({ selectedTab, setActiveApp }) => {
             ol, ul {
                 list-style-type: decimal;
                 margin-left: 20px;
+                gap: 16px;
+                display: flex;
+                flex-flow: column;
             }
           `}</style>
             {selectedTab === 0 && (
                 <>
-                    <h2>About this project</h2>
                     <div>
                         <div style={{}}>
+                            <h2>About this project</h2>
                             <p className="pText">Hey👋, I&apos;m Srikant Sahoo.</p>
                             <p className="pText">
                                 I&apos;m excited to present a project that I&apos;ve submitted for{' '}
                                 <code className="code">The Netlify Dynamic Site Challenge</code>. This project is a
                                 cutting-edge mock-up user interface designed for virtual reality devices, taking
                                 inspiration from futuristic concepts like <code className="code">Apple Vision</code>.
+                            </p>
+                            <p className="pText">
                                 Please note that this project is not associated with any organization and is purely a
-                                result of my passion for technology and innovation.
+                                result of my passion and 💘 for technology and innovation.
                             </p>
                             <p className="pText">
                                 All the assets, graphics, and icons used in this project have been duly referenced, and
-                                you can find the sources in the references tab. This project is a testament to my
-                                commitment to ethical practices in software development.
+                                you can find the sources in the <code>References</code>. This project is a testament to
+                                my commitment to ethical practices in software development.
                             </p>
                             <p className="pText">
                                 This project showcases three key features of Netlify, each demonstrated through a
@@ -95,27 +100,44 @@ const References = () => {
             id: 1,
             text: 'All Memories and Albums Images (unsplash.com)',
             url: 'http://unsplash.com/',
-            description:
-                'All images in Memories and the Albums as well as this app background image, are taken from unsplash.com. If you open a specific image from the Gallery app then you will find the Original author.'
+            description: (
+                <>
+                    All images in <code>Memories App</code> and the <code>Albums App</code> as well as this project
+                    background image, are taken from unsplash.com. If you open a specific image from the{' '}
+                    <code>Memories</code> app then you will find the original author and link to original image.
+                </>
+            )
         },
         {
             id: 2,
             text: 'Apple App Icons',
             url: 'https://google.com',
-            description: 'These are open source, and taken from basic google search results'
+            description: <>These are open source, and taken from basic Google search results.</>
         },
         {
             id: 3,
             text: 'Images in Discover App',
             url: 'https://en.wikipedia.org/api/rest_v1/page/random/summary',
-            description:
-                'These are directly served from wikipedia random article API https://en.wikipedia.org/api/rest_v1/page/random/summary using SSR, and the cache is revalidated by clicking the `next article` button.'
+            description: (
+                <>
+                    These are directly served from wikipedia random article API
+                    https://en.wikipedia.org/api/rest_v1/page/random/summary using SSR, and the cache is revalidated by
+                    clicking the <code>Next Article</code> button.
+                </>
+            )
         },
         {
             id: 4,
-            text: 'Please vote my submission of Netlify dynamic site challenge in Dev.to. I will open source the code if it gets selected.',
+            text: 'Please vote my submission of Netlify dynamic site challenge in Dev.to.',
             url: 'https://dev.to/srikant_code',
-            description: 'It would also motivate me to continue doing further such work'
+            description: (
+                <>
+                    I will open source the code if it gets selected. It would also motivate me to continue doing further
+                    such work😄. You can connect with me here{' '}
+                    <ExternalLink href="https://www.linkedin.com/in/srikant-design/">LinkedIn</ExternalLink> |{' '}
+                    <ExternalLink href="https://twitter.com/srikant_design">Twitter</ExternalLink>
+                </>
+            )
         }
 
         // Add more references as needed
