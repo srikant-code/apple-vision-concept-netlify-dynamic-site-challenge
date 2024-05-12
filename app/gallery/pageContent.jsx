@@ -35,9 +35,9 @@ export const APP = {
             <>
                 This app utilizes <code>Netlify&apos;s Blobs</code> storage to store user albums and its contents. In
                 this prototype project, there&apos;s no authentication implemented, but I have written a clever and
-                complex logic to create anonymous users and handle their albums data in blobs. You can see other users
-                albums from the <code>Other&apos;s Albums</code> tab. This feature showcases the flexibility and
-                user-friendly nature of Netlify&apos;s Blobs storage.
+                complex logic to create anonymous users and handle their albums data in blobs. <br />
+                You can see other users albums from the <code>Other&apos;s Albums</code> tab. This feature showcases the
+                flexibility and user-friendly nature of Netlify&apos;s Blobs storage.
             </>
         ),
         component: AlbumsAppContent,
@@ -52,12 +52,13 @@ export const APP = {
         description: (
             <>
                 This app uses Netlify&apos;s Cache Revalidation technique to fetch the latest articles from the web
-                (Wikipedia) using SSR(Server Side Rendering technique of Next JS). It highlights how Netlify&apos;s
-                Cache Revalidation can ensure users always have access to the most recent information.
+                (Wikipedia) using SSR(Server Side Rendering technique of Next JS). <br />
+                It highlights how Netlify&apos;s Cache Revalidation can ensure users always have access to the most
+                recent information.
             </>
         ),
         component: NewsAppContent,
-        tabs: [{ id: 0, text: 'Article' }]
+        tabs: [{ id: 0, text: 'Featured Article' }]
     },
     3: {
         name: 'Srikant',
@@ -65,7 +66,15 @@ export const APP = {
         description: (
             <>
                 This project is a hobby endeavor that I&apos;m proud of, and I hope it helps you understand the
-                potential of Netlify&apos;s capabilities. Enjoy exploring! You can connect with me here{' '}
+                potential of Netlify&apos;s capabilities. <br />
+                It took me more than 5 days to build this. I will be putting up what all challenges I have faced during
+                the development of this in the submission article. Would really appreciate if you liked it and can vote
+                my submission here 👇
+                <br />
+                <Button>
+                    <ExternalLink href={'https://dev.to/srikant_code'}>Please vote here😄</ExternalLink>
+                </Button>
+                <br /> You can connect with me anytime here{' '}
                 <ExternalLink href="https://www.linkedin.com/in/srikant-design/">LinkedIn</ExternalLink> |{' '}
                 <ExternalLink href="https://twitter.com/srikant_design">Twitter</ExternalLink>
             </>
@@ -79,7 +88,7 @@ export const APP = {
 };
 
 export const PageContent = (props) => {
-    const [activeApp, setActiveApp] = useState(1);
+    const [activeApp, setActiveApp] = useState(0);
     // console.log({ props });
 
     const internalStyles = {

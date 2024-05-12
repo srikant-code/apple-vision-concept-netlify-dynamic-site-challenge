@@ -319,7 +319,15 @@ export const AlbumsAppContent = ({ selectedTab, setActiveApp, activeApp }) => {
           `}</style>
             {
                 <>
-                    <div style={{ display: 'flex', alignItems: 'center', gap: 10, marginBottom: 16 }}>
+                    <div
+                        style={{
+                            display: 'flex',
+                            justifyContent: 'center',
+                            gap: 10,
+                            marginBottom: 16,
+                            flexFlow: 'column'
+                        }}
+                    >
                         {otherUserOpenedAlbum && (
                             <Button
                                 // style={styles.albumButton}
@@ -334,6 +342,11 @@ export const AlbumsAppContent = ({ selectedTab, setActiveApp, activeApp }) => {
                             {yourAlbumTab ? 'Your' : otherUserOpenedAlbum ? selectedBlobUser : 'Other users'}{' '}
                             {selectedAlbum ? 'Photos' : 'Albums'}
                         </h2>
+                        {yourAlbumTab && (
+                            <p style={{ ...styles.subText, marginTop: 0, marginLeft: 2 }}>
+                                You are logged in anonymously as {localStorageID}!
+                            </p>
+                        )}
                     </div>
                     {Object.keys(userAlbums ?? {})?.length ? (
                         <div style={styles.containerWrapper}>

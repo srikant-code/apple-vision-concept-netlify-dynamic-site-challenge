@@ -80,11 +80,6 @@ export const SrikantAppContent = ({ selectedTab, setActiveApp }) => {
                                     );
                                 })}
                             </ol>
-                            <Button>
-                                <ExternalLink href={'https://dev.to/srikant_code'}>
-                                    If you liked it, please do give it a vote here😄
-                                </ExternalLink>
-                            </Button>
                         </div>
                     </div>
                 </>
@@ -121,8 +116,8 @@ const References = () => {
             description: (
                 <>
                     These are directly served from wikipedia random article API
-                    https://en.wikipedia.org/api/rest_v1/page/random/summary using SSR, and the cache is revalidated by
-                    clicking the <code>Next Article</code> button.
+                    https://en.wikipedia.org/api/rest_v1/page/random/summary using SSR(Server Side Rendering technique
+                    of Next JS), and the cache is revalidated by clicking the <code>Next Article</code> button.
                 </>
             )
         },
