@@ -306,6 +306,14 @@ export const AlbumsAppContent = ({ selectedTab, setActiveApp, activeApp }) => {
     const otherUserOpenedAlbum = selectedBlobUser && selectedAlbum;
     const otherUserAlbumTabHomePage = otherUsersAlbumTab && !selectedAlbum;
 
+    useEffect(() => {
+        if (otherUserAlbumTabHomePage) {
+            setUserAlbums(blobData[selectedBlobUser]?.albums ?? undefined);
+        } else {
+            setUserAlbums(!userAlbums ? undefined : blobData[localStorageID]?.albums ?? undefined);
+        }
+    }, [selectedBlobUser]);
+
     return (
         <div style={{ padding: 20 }}>
             <style>{`
