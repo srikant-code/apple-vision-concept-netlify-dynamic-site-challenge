@@ -121,14 +121,26 @@ const References = () => {
                 </>
             )
         },
+        // {
+        //     id: 3,
+        //     text: 'UI Inspiration | Dribbble shot by Andrae Waters',
+        //     url: 'https://dribbble.com/shots/23218407-Apple-Vision-Pro-AR-Photo-Gallery',
+        //     description: (
+        //         <>
+        //             These are directly served from wikipedia random article API
+        //             https://en.wikipedia.org/api/rest_v1/page/random/summary using SSR(Server Side Rendering technique
+        //             of Next JS), and the cache is revalidated by clicking the <code>Next Article</code> button.
+        //         </>
+        //     )
+        // },
         {
             id: 4,
-            text: 'Please vote my submission of Netlify dynamic site challenge in Dev.to.',
+            text: 'Please refer my submission of Netlify dynamic site challenge in Dev.to.',
             url: 'https://dev.to/srikant_code',
             description: (
                 <>
-                    I will open source the code if it gets selected. It would also motivate me to continue doing further
-                    such work😄. You can connect with me here{' '}
+                    I will open source the UI code if it gets selected. It would also motivate me to continue doing
+                    further such work😄. You can connect with me here{' '}
                     <ExternalLink href="https://www.linkedin.com/in/srikant-design/">LinkedIn</ExternalLink> |{' '}
                     <ExternalLink href="https://twitter.com/srikant_design">Twitter</ExternalLink>
                 </>

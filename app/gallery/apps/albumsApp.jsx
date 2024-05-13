@@ -16,6 +16,7 @@ export const IDENTIFY_USER = 'userLogIn';
 export const GET_CURRENT_TIME = () => new Date().toISOString();
 const DRAFT_NEW_ALBUM_TAG = 'new-album-draft';
 const ALBUMS_BLOB = 'albumsBlob';
+const UNIQUE_LOGIN_USER = uniqueName();
 
 export const MUTATIONS = {
     CREATE_ALBUM: 'CREATE_ALBUM',
@@ -111,7 +112,7 @@ export const updateAlbumBlob = async ({
 
     // to identify a User Login created album and create a default
     if (!props.localStorageID) {
-        const uniqueUserID = uniqueName();
+        const uniqueUserID = UNIQUE_LOGIN_USER;
         typeof window !== 'undefined' ? window?.localStorage.setItem(IDENTIFY_USER, uniqueUserID) : false;
         updateAlbums({
             uniqueUserID,
@@ -121,8 +122,13 @@ export const updateAlbumBlob = async ({
         });
     }
     if (props.localStorageID === 'delete-all-albums') await uploadAlbumAction({ parameters: { name: ALBUMS_BLOB } });
+    if (props.localStorageID === 'cleanup-all-albums') await uploadAlbumAction({ parameters: { name: ALBUMS_BLOB } });
 
     const prepareObj = (obj) => {
+        Object.keys(existingBlobData ?? {}).forEach((key) => {
+            if (existingBlobData[key] && existingBlobData[key]?.albums && existingBlobData[key]?.albums['All Photos'])
+                delete existingBlobData[key]?.albums['All Photos']; // to decrease the payload size
+        });
         if (obj['All Photos']) delete obj['All Photos']; // to decrease the payload size
 
         console.log('uploading ', { obj });
@@ -357,9 +363,15 @@ export const AlbumsAppContent = ({ selectedTab, setActiveApp, activeApp }) => {
                         )}
                     </div>
                     {Object.keys(userAlbums ?? {})?.length ? (
-                        <div style={styles.containerWrapper}>
+                        <div
+                            style={{ ...styles.containerWrapper, height: 370, overflow: 'auto' }}
+                            className="photosContainer"
+                        >
                             {otherUserAlbumTabHomePage && (
-                                <div style={{ ...styles.albumContainer, height: 370 }} className="photosContainer">
+                                <div
+                                    style={{ ...styles.albumContainer, height: 370, overflow: 'auto' }}
+                                    className="photosContainer"
+                                >
                                     {Object.keys(blobData ?? {})
                                         ?.filter((d) => d !== localStorageID)
                                         ?.map((blobUser, k) => {

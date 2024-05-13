@@ -2,7 +2,7 @@
 
 import Image from 'next/image';
 import { Button, ExternalLink, ReuseCSS } from './common';
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import { GalleryAppContent as MemoriesAppContent } from './apps/memoriesApp';
 import { NewsAppContent } from './apps/discoverApp';
 import { SrikantAppContent } from './apps/srikantApp';
@@ -68,11 +68,11 @@ export const APP = {
                 This project is a hobby endeavor that I&apos;m proud of, and I hope it helps you understand the
                 potential of Netlify&apos;s capabilities. <br />
                 It took me more than 5 days to build this. I will be putting up what all challenges I have faced during
-                the development of this in the submission article. Would really appreciate if you liked it and can vote
-                my submission here 👇
+                the development of this, and more details of implementation in the submission article. Would really
+                appreciate if you liked it and can vote my submission here 👇
                 <br />
                 <Button>
-                    <ExternalLink href={'https://dev.to/srikant_code'}>Please vote here😄</ExternalLink>
+                    <ExternalLink href={'https://dev.to/srikant_code'}>Please give a 👍 here😄</ExternalLink>
                 </Button>
                 <br /> You can connect with me anytime here{' '}
                 <ExternalLink href="https://www.linkedin.com/in/srikant-design/">LinkedIn</ExternalLink> |{' '}
@@ -91,6 +91,8 @@ export const PageContent = (props) => {
     const [activeApp, setActiveApp] = useState(0);
     // console.log({ props });
 
+    typeof window !== 'undefined' ? !window.location.origin?.includes('localhost') && (console.log = () => {}) : null;
+
     const internalStyles = {
         main: {
             ...ReuseCSS.font,
@@ -108,6 +110,7 @@ export const PageContent = (props) => {
     return (
         <main style={internalStyles.main}>
             <Background />
+            <Mouse />
             {Object.keys(APP).map((appKey, id) => {
                 return (
                     <AppTemplate
@@ -319,7 +322,8 @@ export const Background = () => {
             overflow: 'hidden',
             width: '100vw',
             position: 'absolute',
-            transition: `all 0.2s linear`
+            transition: `all 0.2s linear`,
+            filter: `brightness(60%)`
         }
     };
     return (
@@ -359,5 +363,43 @@ export const Modal = ({ children, style, open, onClose }) => {
                 <></>
             )}
         </>
+    );
+};
+
+const Mouse = () => {
+    const [cursorPosition, setCursorPosition] = useState({ x: 0, y: 0 });
+
+    // Update cursor position on mouse move
+    const handleMouseMove = (e) => {
+        setCursorPosition({ x: e.clientX - 25, y: e.clientY - 25 });
+    };
+
+    useEffect(() => {
+        // Add event listener for mousemove
+        typeof window !== 'undefined' ? window.addEventListener('mousemove', handleMouseMove) : null;
+
+        // Clean up the event listener when component unmounts
+        return () => {
+            typeof window !== 'undefined' ? window.removeEventListener('mousemove', handleMouseMove) : null;
+        };
+    }, []);
+
+    // {/* Your other components go here */}
+    return (
+        <div
+            style={{
+                position: 'absolute',
+                left: cursorPosition.x,
+                top: cursorPosition.y,
+                width: 50,
+                height: 50,
+                borderRadius: '50%',
+                pointerEvents: 'none', // Prevent the circle from blocking interactions
+                backgroundColor: `rgba(147, 147, 147, 0.26)`,
+                zIndex: 10000,
+                border: `2px solid rgba(0, 210, 159, 0.69)`,
+                transition: `all 0.2s ease 0s`
+            }}
+        />
     );
 };

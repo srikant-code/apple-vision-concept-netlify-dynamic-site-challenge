@@ -8,7 +8,7 @@ const ctx = getNetlifyContext();
 const tagName = 'randomWiki';
 const randomWikiUrl = 'https://en.wikipedia.org/api/rest_v1/page/random/summary';
 const maxExtractLength = 200;
-const revalidateTTL = 60;
+const revalidateTTL = 600;
 
 import { revalidateTag } from 'next/cache';
 import { PageContent } from './gallery/pageContent';
