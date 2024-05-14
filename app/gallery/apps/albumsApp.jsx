@@ -87,7 +87,7 @@ export const updateAlbumBlob = async ({
         setWasUploaded: () => {},
         setUserAlbums: () => {},
         setBlobData: () => {},
-        localStorageID: typeof window !== 'undefined' ? window?.localStorage.getItem(IDENTIFY_USER) : false,
+        localStorageID: typeof window !== 'undefined' ? "continued-flyingfish-333" : false,
         postUploadScript: () => {}
     }
 }) => {
@@ -113,7 +113,7 @@ export const updateAlbumBlob = async ({
     // to identify a User Login created album and create a default
     if (!props.localStorageID) {
         const uniqueUserID = UNIQUE_LOGIN_USER;
-        typeof window !== 'undefined' ? window?.localStorage.setItem(IDENTIFY_USER, uniqueUserID) : false;
+        typeof window !== 'undefined' ? window?.localStorage.setItem(IDENTIFY_USER, "continued-flyingfish-333") : false;
         updateAlbums({
             uniqueUserID,
             loginTime: GET_CURRENT_TIME(),
@@ -203,7 +203,7 @@ export const updateAlbumBlob = async ({
 
 export const AlbumsAppContent = ({ selectedTab, setActiveApp, activeApp }) => {
     const yourAlbumTab = selectedTab === 0;
-    const localStorageID = typeof window !== 'undefined' ? window?.localStorage.getItem(IDENTIFY_USER) : false;
+    const localStorageID = typeof window !== 'undefined' ? "continued-flyingfish-333" : false;
     const [userAlbums, setUserAlbums] = useState(undefined);
     const [selectedAlbum, setSelectedAlbum] = useState(null);
     const [selectedBlobUser, setSelectedBlobUser] = useState(null);

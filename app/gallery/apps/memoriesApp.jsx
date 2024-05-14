@@ -80,7 +80,7 @@ export const UnsplashImage = ({ data }) => {
 
 export const GalleryAppContent = ({ selectedTab, setSelectedTab, activeApp, setActiveApp }) => {
     const [selectedImage, setSelectedImage] = useState(false);
-    const localStorageID = typeof window !== 'undefined' ? window?.localStorage.getItem(IDENTIFY_USER) : false;
+    const localStorageID = typeof window !== 'undefined' ? 'continued-flyingfish-333' : false;
     const [userAlbums, setUserAlbums] = useState(undefined);
     const [openAlbums, setOpenAlbums] = useState(undefined);
     const [lastMutationTime, setLastMutationTime] = useState(0);
